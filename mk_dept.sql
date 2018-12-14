@@ -4,9 +4,8 @@ CREATE SEQUENCE dept_seq MINVALUE 1 INCREMENT 1;
 INSERT INTO departement VALUES (NEXTVAL('dept_seq'), 'ISIS'), (NEXTVAL('dept_seq'), 'INFO'), (NEXTVAL('dept_seq'), 'SQL');
 
 SELECT * FROM departement;
-*/
 
-/*
+	
 CREATE VIEW reserv_par_enseignant (id, enseignant, nb_de_reservations) AS
 	SELECT E.enseignant_id, E.nom, COUNT(*)
 	FROM Enseignant E, Reservation R
@@ -41,8 +40,8 @@ UPDATE info_enseignant SET email = 'elyes.lamine@gmail.com'
 
 SELECT * FROM info_enseignant;
 SELECT * FROM Enseignant;
-*/
-CREATE OR REPLACE RULE insert_info_enseignant AS ON UPDATE
+
+CREATE OR REPLACE RULE insert_info_enseignant AS ON INSERT
 TO info_enseignant DO INSTEAD
 	INSERT INTO Enseignant (enseignant_id, departement_id, nom, prenom, grade, telephone,
 		fax, email)
@@ -50,3 +49,19 @@ TO info_enseignant DO INSTEAD
 
 INSERT INTO info_enseignant (matricule, nom, prenom, email)
 	VALUES (42, 'Montaut', 'Thierry', 'tm@coolprof.com');
+
+SELECT * FROM Enseignant;
+*/
+DROP FUNCTION GetSalleCapaciteSuperieurA;
+CREATE OR REPLACE FUNCTION GetSalleCapaciteSuperieurA (arg_capacite int)
+RETURNS  Salle AS $$
+DECLARE
+	maSalle Salle;
+BEGIN
+	FOR maSalle in (SELECT * FROM Salle WHERE Capacite >= arg_capacite) LOOP
+		-- maSalle = s;
+		RETURN maSalle;
+	END LOOP ;
+END; $$ LANGUAGE 'plpgsql';
+
+select * from GetSalleCapaciteSuperieurA(30);
